@@ -23,4 +23,8 @@ public class Tweet {
 
     @Column(name = "created_at")
     private LocalDateTime createdAt; // olusturulma zamani
+
+    @ManyToOne // bir cok tweet bir kullaniciya aittir
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user; // tweet atan kullanici
 }
