@@ -1,12 +1,15 @@
 package com.workintech.twitter_api.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -29,4 +32,9 @@ public class Tweet {
     @ManyToOne // bir cok tweet bir kullaniciya aittir
     @JoinColumn(name = "user_id", nullable = false)
     private User user; // tweet atan kullanici
+
+    @JsonManagedReference("tweetComments")
+    @OneToMany(mappedBy = "tweet", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Comment> comments = new ArrayList<>();//tweete yapilan yorumlarin listesi
+
 }
