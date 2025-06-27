@@ -4,38 +4,45 @@ package com.workintech.twitter_api.controller;
 import com.workintech.twitter_api.entity.Tweet;
 import com.workintech.twitter_api.service.TweetService;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @AllArgsConstructor
 @RestController
-@RequestMapping("/tweet")
+@RequestMapping("/user")
 public class TweetController {
 
     private final TweetService tweetService;
 
-    @GetMapping //tum tweetleri getirme
+    @PostMapping("/{userId}/tweet")
+    public Tweet createTweet(@PathVariable Long userId, @RequestBody Tweet tweet){
+        return tweetService.save(tweet, userId);
+    }
+
+    @GetMapping("/tweet")
     public Iterable<Tweet> getAllTweets() {
-        return tweetService.findAll(); //TweetServicedeki tum tweetleri alip dondur.
+        return tweetService.findAll();
     }
 
-    @PostMapping // yeni bir tweet olusturan
-    public Tweet createTweet(@RequestBody Tweet tweet) {
-        return tweetService.save(tweet); //tweetservicedeki tweeti kaydedip dondur.
-    }
-
-    @GetMapping("/{id}") //belirli id ye sahip twiti getiren
+    @GetMapping("/tweet/{id}")
     public Tweet getTweetById(@PathVariable Long id) {
-        return tweetService.findById(id); //tweetserviceden id ye gore tweet bulup dodur
+        return tweetService.findById(id);
     }
 
-    @PutMapping("/{id}") //guncelleme
+    @PutMapping("/tweet/{id}")
     public Tweet updateTweet(@PathVariable Long id, @RequestBody Tweet tweet) {
-        tweet.setId(id);
-        return tweetService.save(tweet); // RequestBody ile json formatinda nesneyi aldik, id yi set edip guncelleyip dondurduk
+        return tweetService.save(tweet, tweet.getUser().getId());
     }
 
-    @DeleteMapping("/{id}") //silme
-    public void deleteTweet(@PathVariable Long id) {
-        tweetService.delete(id);
+    @DeleteMapping("/{userId}/tweet/{tweetId}")
+    public void deleteTweet(@PathVariable Long userId, @PathVariable Long tweetId) {
+        tweetService.delete(tweetId, userId);
+    }
+
+    @GetMapping("/{userId}/tweets")
+    public List<Tweet> getTweetsByUserId(@PathVariable Long userId) {
+        return tweetService.findTweetsByUserId(userId);
     }
 }

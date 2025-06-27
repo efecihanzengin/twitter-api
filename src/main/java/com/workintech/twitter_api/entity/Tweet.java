@@ -1,5 +1,6 @@
 package com.workintech.twitter_api.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -24,6 +25,7 @@ public class Tweet {
     @Column(name = "created_at")
     private LocalDateTime createdAt; // olusturulma zamani
 
+    @JsonBackReference
     @ManyToOne // bir cok tweet bir kullaniciya aittir
     @JoinColumn(name = "user_id", nullable = false)
     private User user; // tweet atan kullanici
