@@ -42,4 +42,8 @@ public class User {
     @JsonManagedReference("userComments") // kullaniciginin yaptigi yorumlarin listesi
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments = new ArrayList<>();
+
+    @JsonManagedReference("userLikes")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Like> likes = new ArrayList<>();
 }

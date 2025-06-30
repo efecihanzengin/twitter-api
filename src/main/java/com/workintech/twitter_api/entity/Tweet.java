@@ -37,4 +37,8 @@ public class Tweet {
     @OneToMany(mappedBy = "tweet", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Comment> comments = new ArrayList<>();//tweete yapilan yorumlarin listesi
 
+    @JsonManagedReference("tweetLikes")
+    @OneToMany(mappedBy = "tweet", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Like> likes = new ArrayList<>();
+
 }
