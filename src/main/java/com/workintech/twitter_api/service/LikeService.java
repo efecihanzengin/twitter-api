@@ -1,6 +1,5 @@
 package com.workintech.twitter_api.service;
 
-
 import com.workintech.twitter_api.entity.Like;
 import com.workintech.twitter_api.entity.Tweet;
 import com.workintech.twitter_api.entity.User;
@@ -20,36 +19,37 @@ public class LikeService {
     private final UserRepository userRepository;
     private final TweetRepository tweetRepository;
 
+
     public Like addLike(Long userId, Long tweetId) {
 
-        // kullanici ve tweeti bulmaya calisiyoruz
         Optional<User> userOptional = userRepository.findById(userId);
         Optional<Tweet> tweetOptional = tweetRepository.findById(tweetId);
 
-        if(userOptional.isEmpty() || tweetOptional.isEmpty()) {
-            throw new RuntimeException("User or Tweet not found.");
+        if (userOptional.isEmpty() || tweetOptional.isEmpty()) {
+            throw new RuntimeException("User or Tweet not found."); // Daha sonra Custom Exception kullanabiliriz
         }
 
         User user = userOptional.get();
         Tweet tweet = tweetOptional.get();
-        // --
 
-        // Kullanicinin tweete begeni atip atmadigini kontrol et
-        Optional<Like> existingLike = likeRepository.findByUserAndTweetId(userId, tweetId);
-        if (existingLike.isPresent()){
-            throw new RuntimeException("User has already liked this tweet.");
+
+        Optional<Like> existingLike = likeRepository.findByUserIdAndTweetId(userId, tweetId); // <-- Bu satır
+        if (existingLike.isPresent()) {
+            throw new RuntimeException("User has already liked this tweet."); // Daha sonra Custom Exception kullanabiliriz
         }
 
-        //like objesi olustur kaydet
+
         Like like = new Like();
         like.setUser(user);
         like.setTweet(tweet);
 
         user.getLikes().add(like);
         tweet.getLikes().add(like);
+
         return likeRepository.save(like);
     }
-    //like silme islemi
+
+
     public void removeLike(Long likeId, Long userId) {
 
         Optional<Like> likeOptional = likeRepository.findById(likeId);
@@ -63,13 +63,15 @@ public class LikeService {
         User user = userOptional.get();
 
 
-
-        if (!like.getUser().getId().equals(userId)) {
-            throw new RuntimeException("You are not authorized to remove this like. Only the user who liked it can remove it."); // Daha sonra Custom Exception kullanabiliriz
+        Optional<Like> foundLikeForUser = likeRepository.findByIdAndUserId(likeId, userId); // <-- Bu satır
+        if (foundLikeForUser.isEmpty()) {
+            throw new RuntimeException("You are not authorized to remove this like. Only the user who liked it can remove it.");
         }
+
 
         user.getLikes().remove(like);
         like.getTweet().getLikes().remove(like);
+
 
         likeRepository.delete(like);
     }
